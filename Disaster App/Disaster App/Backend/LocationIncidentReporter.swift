@@ -1,7 +1,14 @@
+//
+//  LocationIncidentReporter.swift
+//  Disaster App
+//
+//  Created by Neel Arora on 4/5/25.
+//
+
 import Foundation
 import Combine
 
-class APIService: ObservableObject {
+class LocationIncidentReporter: ObservableObject {
     @Published var responseMessage: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
@@ -9,8 +16,9 @@ class APIService: ObservableObject {
     private let retryAttempts = 3
     private let timeoutInterval: TimeInterval = 30 // Timeout after 30 seconds
     
-    func createUser(user: Model1) {
-        guard let url = URL(string: "https://api.thetechtitans.vip/incident") else {
+    func createUser(user: IncidentModelSend) {
+        
+        guard let url = URL(string: "https://api.thetechtitans.vip/incident/receive") else {
             self.errorMessage = "Invalid URL"
             return
         }
@@ -29,7 +37,7 @@ class APIService: ObservableObject {
             return
         }
         //https://thetechtitans.vip/incident/[id]
-        isLoading = true
+        
         performRequest(request: request, retryCount: retryAttempts)
     }
     
@@ -89,9 +97,9 @@ class APIService: ObservableObject {
                     let jsonDecoder = JSONDecoder()
                     
                     // Decode the JSON into the expected model
-                    let responseModel = try jsonDecoder.decode(RecievingModel1FromAPI.self, from: data)
-                    
-                    self.responseMessage = responseModel.message
+                    let responseModel = try jsonDecoder.decode(IncidentModelRecieve.self, from: data)
+                    self.responseMessage = responseModel.disaster
+
                     print("Received message from server: \(self.responseMessage)")
                     
                 } catch let decodingError {
@@ -114,3 +122,4 @@ class APIService: ObservableObject {
         }.resume()
     }
 }
+
